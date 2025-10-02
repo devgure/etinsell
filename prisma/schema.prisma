@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// Enums used by payment service
+enum PlanType {
+  FREE
+  PREMIUM
+  GOLD
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  UNPAID
+}
+
+enum TransactionType {
+  SUBSCRIPTION
+  UNDO_SWIPE
+  INCOGNITO_MODE
+  VERIFIED_BADGE
+  TIP
+  GIFT
+}
+
+enum TransactionStatus {
+  SUCCESS
+  FAILED
+  PENDING
+  REFUNDED
+}
+
+// Minimal models required by the payment service
+model User {
+  id            String   @id @default(auto()) @map("_id")
+  email         String   @unique
+  name          String
+  isPremium     Boolean  @default(false)
+  planType      PlanType @default(FREE)
+  hasBadge      Boolean  @default(false)
+  undoCredits   Int      @default(0)
+  walletAddress String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subscriptions Subscription[]
+  transactions  Transaction[]
+  giftsSent     Gift[] @relation("GiftSender")
+  giftsReceived Gift[] @relation("GiftReceiver")
+
+  @@map("users")
+}
+
+model Subscription {
+  id                   String             @id @default(auto()) @map("_id")
+  userId               String
+  stripeSubscriptionId String?
+  plan                 PlanType
+  status               SubscriptionStatus
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  @@map("subscriptions")
+}
+
+model Transaction {
+  id        String            @id @default(auto()) @map("_id")
+  userId    String
+  type      TransactionType
+  amount    Float
+  currency  String
+  status    TransactionStatus @default(PENDING)
+  stripeSessionId String?
+  description String?
+  createdAt DateTime          @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  @@map("transactions")
+}
+
+model Gift {
+  id         String @id @default(auto()) @map("_id")
+  senderId   String
+  receiverId String
+  giftType   String
+  costInETI  Int
+  sentAt     DateTime @default(now())
+
+  sender   User @relation("GiftSender", fields: [senderId], references: [id])
+  receiver User @relation("GiftReceiver", fields: [receiverId], references: [id])
+  @@map("gifts")
+}
+
+model ProcessedEvent {
+  id          String   @id @default(auto()) @map("_id")
+  eventId     String   @unique
+  type        String
+  status      String   @default("PROCESSING")
+  result      Json?
+  error       String?
+  processedAt DateTime? @default(now())
+
+  @@map("processed_events")
+}

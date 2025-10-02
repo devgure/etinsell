@@ -1,0 +1,34 @@
+{
+  "name": "etincell-payment",
+  "version": "0.2.0",
+  "description": "Payment and monetization microservice for Etincel (Stripe + Polygon ETI helpers)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --watch src --exec node src/index.js",
+    "test": "NODE_ENV=test jest --runInBand",
+    "integration": "node scripts/run-integration.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 20000
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "ethers": "^6.9.0",
+    "express": "^4.18.2",
+    "prisma": "^5.10.1",
+    "stripe": "^12.13.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "mongodb-memory-server": "^8.16.1",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

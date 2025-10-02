@@ -1,0 +1,10 @@
+{
+  "name": "i18n-service",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "@google-cloud/translate": "^6.2.0",
+    "dotenv": "^16.0.0"
+  }
+}
