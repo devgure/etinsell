@@ -1,0 +1,1790 @@
+# etincell
+peer to peer marketaplce matching service 
+generate full-stack dating Mobile App that works seamlessly across mobile web, native apps, and desktop ,similar to Tinder.
+Monetization profitable ,location based GPS, facial recognition, AI Driving, I18n ,Admin page, modular and scalable microservice MVP
+
+////////////////////////        //////////////////////////
+
+The initial workspace setup for your 
+
+Generate
+full-stack, modular, microservice-based dating app MVP (similar to Tinder). will include cross-platform support (mobile web, native apps, desktop),blockchain-verified
+monetization, location-based GPS, facial recognition, AI-driven matching, internationalization (i18n), admin dashboard, and scalable architecture using modern frameworks.
+
+
+//////////////////
+
+full-stack dating Mobile App that works seamlessly across mobile web, native apps, and desktop ,similar to Tinder.
+Monetization profitable ,location based GPS, facial recognition, AI Driving, I18n ,Admin page, modular and scalable microservice MVP
+AI-powered, blockchain-verified dating call it Etincel
+
+
+
+////////////////////////////
+
+Generate a similar structure code of the application project 
+
+         CLIENT LAYERS                         |
++-------------------------------------------------------------+
+|  Mobile App (iOS/Android)   |  Mobile Web   |  Desktop Web  |
+|  (React Native )   | (React/PWA)   | (React)   |
++-----------------------------+---------------+---------------+
+               |                     |                |
+               v                     v                v
++-------------------------------------------------------------+
+|                      API GATEWAY / Kong, BFF + GraphQL                     |
+|  (REST/GraphQL) + Kong → Auth, Rate Limiting, Request Routing      |
++-------------------------------------------------------------+
+               | (Secure HTTPS / WebSockets)
+               v
++-------------------------------------------------------------+
+|                      MICROSERVICES BACKEND                  |
+|-------------------------------------------------------------|
+| • Auth Service   • Match Service   • Chat Service Node.js + Socket.IO / WebRTC (Real-time messaging) read receipts   |
+|  • Profile Service  • AI Engine         • Notification      |
+|  • Media Service    • Discovery Service • Analytics Service 
+ • payment service| •User Service,"Node.js + Express / NestJS (Auth, Profiles, Preferences)"
+ blockchain-service  Node.js + Web3.js
+ location-service  Go + Redis Geo  Nearby users, geofencing
+ Chat Service   ,Elixir (Phoenix) + WebSockets,           "Real-time messaging, read receipts"
+ Payment Service,      Node.js + Stripe + Polygon,          "Subscriptions, in-app purchases"
+ Verification Service,    Node.js + AWS Rekognition + Polygon SDK,   "ID/selfie verification, blockchain hashing"
+ Chat Service ,Elixir (Phoenix) + WebSockets, "Real-time messaging, read receipts"
++-------------------------------------------------------------+
+               |
+ Auth Service,   Keycloak + JWT + OAuth2,
+ Message Broker: RabbitMQ or Kafka (for async tasks like AI processing)
+
+ Blockchain-based identity verification
+ Blockchain Service, Solidity + Web3.py + Polygon SDK, "Minting ID NFTs, verifying claims"
+ Tipping Send “Sparks” (crypto/fiat) 15% platform cut
+
+               
++-------------------------------------------------------------+
+|                       DATA LAYER                            |
+|-------------------------------------------------------------|
+|  MongoDB (User, Match, Chat)                             |
+|  MongoDB (Profiles, Preferences)                            |
+|  Redis (Caching, Session, Real-time)                        |
+|  Elasticsearch (Search, Discovery)                          |
+|  MinIO / AWS S3 (Photos, Video)                             |
++-------------------------------------------------------------+
+               |
+               v
++-------------------------------------------------------------+
+|                     AI/ML ENGINE SERVICES                   |
+|-------------------------------------------------------------|
+|  • Recommendation Engine (Collaborative + Content-Based)   |
+|  • NLP Chat Analyzer (Icebreakers, Safety, Tone Detection) |
+|  • Image Moderation (NSFW, Profile Quality)                |
+|  • Behavioral Prediction (Swipe Likelihood, Churn Risk)    |
+|  • Smart Matching (AI-driven compatibility scoring)        |
++-------------------------------------------------------------+
+               |
+               v
++-------------------------------------------------------------+
+|                   CLOUD INFRASTRUCTURE (AWS/GCP)            |
+|  • Kubernetes (Orchestration)                               |
+|  • Docker (Containerization)                                |
+|  • Cloud Functions (Serverless for AI tasks)                |
+|  • CDN (Image/video delivery)                               |
+|  • Firebase / FCM (Push Notifications)                      |
++-------------------------------------------------------------+
+               |
+               v
++-------------------------------------------------------------+
+|                  MONITORING & ANALYTICS                     |
+|  • Prometheus + Grafana (Monitoring)                        |
+|  • ELK Stack (Logging)                                      |
+|  • Mixpanel / Amplitude (User Behavior)                     |
+|  • tests cypress e2e  unit test
+    .A/B Testing Platform          
+
+////////////////////////////////////////////////////////////////////////////     
+
+
+
+generate all starter code for each service and client (React Native, React, Node.js/NestJS, Go, Solidity, Add Integrate AI, blockchain, and monetization modules....use Mongodb Prisma schema 
+
+
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// =======================
+// ENUMS
+// =======================
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+  OTHER
+}
+
+enum PlanType {
+  FREE
+  PREMIUM
+  GOLD
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  UNPAID
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  GIF
+  VOICE
+  VIDEO_CALL
+  VIDEO_MESSAGE
+}
+
+enum TransactionType {
+  SUBSCRIPTION
+  UNDO_SWIPE
+  INCOGNITO_MODE
+  VERIFIED_BADGE
+  TIP
+  GIFT
+  SPONSORED_PROFILE
+  AI_CHAT_ASSISTANT
+}
+
+enum TransactionStatus {
+  SUCCESS
+  FAILED
+  PENDING
+  REFUNDED
+}
+
+enum ReportType {
+  SPAM
+  INAPPROPRIATE_PHOTO
+  HARASSMENT
+  FAKE_PROFILE
+  OTHER
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BadgeType {
+  VERIFIED
+  SPONSORED
+  TOP_PICK
+}
+
+enum AdType {
+  BANNER
+  INTERSTITIAL
+  REWARDED
+}
+
+enum VideoProfileVisibility {
+  PUBLIC
+  FOLLOWERS_ONLY
+  PRIVATE
+}
+
+// =======================
+// MODELS — UPDATED & FINAL
+// =======================
+
+model User {
+  id                 String       @id @default(auto()) @map("_id")
+  email              String       @unique
+  phone              String?      @unique
+  password           String?      // null for OAuth
+  name               String
+  bio                String?
+  birthDate          DateTime
+  gender             Gender
+  preferredGender    Gender?
+  photos             Photo[]
+  videoProfile       VideoProfile?
+  location           Json?        // GeoJSON { type: "Point", coordinates: [lon, lat] }
+  preferences        Preference?
+  isVerified         Boolean      @default(false)
+  isPremium          Boolean      @default(false)
+  planType           PlanType     @default(FREE)
+  hasBadge           Boolean      @default(false)
+  badgeType          BadgeType?
+  badgePurchasedAt   DateTime?
+  hasIncognito       Boolean      @default(false)
+  incognitoExpiry    DateTime?
+  dailySwipes        Int          @default(0)
+  lastSwipeReset     DateTime     @default(now())
+  undoCredits        Int          @default(0)
+  walletAddress      String?      // For $ETI token
+  tokenId            Int?         // NFT ID
+  nftTxHash          String?      // Blockchain TX for verification audit
+  fcmToken           String?      // Firebase Cloud Messaging token
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  // Relations
+  chats              ChatUser[]   @relation("ChatUserToUser")
+  matches            Match[]      @relation("MatchUsers")
+  sentLikes          Like[]       @relation("LikeSender")
+  receivedLikes      Like[]       @relation("LikeReceiver")
+  subscriptions      Subscription[]
+  transactions       Transaction[]
+  reports            Report[]     @relation("ReportedUser")
+  reportedBy         Report[]     @relation("ReporterUser")
+  giftsSent          Gift[]       @relation("GiftSender")
+  giftsReceived      Gift[]       @relation("GiftReceiver")
+  aiChatSessions     AIChatSession[]
+  blockedUsers       Block[]      @relation("Blocker")
+  blockedBy          Block[]      @relation("Blocked")
+  videoProfiles      VideoProfile[]
+
+  @@index([location], type: Geo) // MongoDB 2dsphere for location queries
+  @@index([email])
+  @@index([phone])
+  @@index([isPremium])
+  @@index([planType])
+  @@index([createdAt])
+  @@index([lastSwipeReset])      // For daily reset cron
+  @@index([incognitoExpiry])     // TTL index for auto-expiry
+  @@map("users")
+}
+
+model Photo {
+  id               String   @id @default(auto()) @map("_id")
+  userId           String
+  url              String
+  isMain           Boolean  @default(false)
+  facialAnalysis   Json?    // { attractiveness: 0.92, symmetry: 0.88, age: 28, hash: "a1b2c3...", verified: true }
+  moderationStatus ModerationStatus @default(PENDING)
+  uploadedAt       DateTime @default(now())
+  moderatedBy      String?  // Admin ID who approved/rejected
+  moderatedAt      DateTime?
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([moderationStatus])
+  @@index([uploadedAt])
+  @@map("photos")
+}
+
+model VideoProfile {
+  id          String              @id @default(auto()) @map("_id")
+  userId      String              @unique
+  videoUrl    String
+  thumbnail   String?
+  caption     String?
+  duration    Int                 // seconds
+  views       Int                 @default(0)
+  likes       Int                 @default(0)
+  visibility  VideoProfileVisibility @default(PUBLIC)
+  uploadedAt  DateTime            @default(now())
+  user        User                @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([uploadedAt])
+  @@index([views])
+  @@map("video_profiles")
+}
+
+model Preference {
+  id             String   @id @default(auto()) @map("_id")
+  userId         String   @unique
+  maxDistance    Int      @default(50) // km
+  minAge         Int      @default(18)
+  maxAge         Int      @default(99)
+  showMe         Gender?
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("preferences")
+}
+
+model Match {
+  id         String     @id @default(auto()) @map("_id")
+  users      User[]     @relation("MatchUsers", references: [id])
+  matchedAt  DateTime   @default(now())
+  chat       Chat?      @relation(fields: [chatId], references: [id])
+  chatId     String?    // Direct link to chat for faster lookup
+
+  @@index([matchedAt])
+  @@index([chatId])      // Critical for chat ↔ match joins
+  @@map("matches")
+}
+
+model Like {
+  id        String   @id @default(auto()) @map("_id")
+  sender    User     @relation("LikeSender", fields: [senderId], references: [id])
+  receiver  User     @relation("LikeReceiver", fields: [receiverId], references: [id])
+  likedAt   DateTime @default(now())
+  senderId  String
+  receiverId String
+
+  @@unique([senderId, receiverId], name: "unique_like")
+  @@index([senderId, receiverId])
+  @@index([likedAt])
+  @@map("likes")
+}
+
+model Chat {
+  id            String       @id @default(auto()) @map("_id")
+  messages      Message[]
+  users         ChatUser[]
+  match         Match?       @relation(fields: [matchId], references: [id]) // Backlink to Match
+  matchId       String?
+  createdAt     DateTime     @default(now())
+  lastActivity  DateTime?    @default(now())
+
+  @@index([createdAt])
+  @@index([lastActivity])
+  @@index([matchId])         // Critical for match → chat
+  @@map("chats")
+}
+
+model ChatUser {
+  id       String  @id @default(auto()) @map("_id")
+  chat     Chat    @relation("ChatUserToChat", fields: [chatId], references: [id])
+  user     User    @relation("ChatUserToUser", fields: [userId], references: [id])
+  chatId   String
+  userId   String
+  lastRead DateTime?
+
+  @@unique([chatId, userId])
+  @@index([userId])
+  @@index([chatId])
+  @@map("chat_users")
+}
+
+model Message {
+  id        String       @id @default(auto()) @map("_id")
+  chatId    String
+  senderId  String
+  content   String
+  type      MessageType  @default(TEXT)
+  encrypted Boolean      @default(false)
+  encryptionKey String?  // For E2E encrypted messages
+  mediaUrl  String?
+  sentAt    DateTime     @default(now())
+  readAt    DateTime?
+  chat      Chat         @relation(fields: [chatId], references: [id])
+  sender    User         @relation(fields: [senderId], references: [id])
+
+  @@index([chatId])
+  @@index([senderId])
+  @@index([sentAt])
+  @@index([type])
+  @@map("messages")
+}
+
+model Subscription {
+  id                  String               @id @default(auto()) @map("_id")
+  userId              String
+  stripeSubscriptionId String?
+  appleTransactionId  String?
+  plan                PlanType
+  status              SubscriptionStatus
+  currentPeriodEnd    DateTime
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  user                User                 @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([plan])
+  @@index([currentPeriodEnd])
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model Transaction {
+  id          String           @id @default(auto()) @map("_id")
+  userId      String
+  type        TransactionType
+  amount      Float
+  currency    String           // "USD", "ETI"
+  status      TransactionStatus @default(PENDING)
+  stripeSessionId String?
+  appleReceipt String?
+  description String?
+  createdAt   DateTime         @default(now())
+  user        User             @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model Report {
+  id           String               @id @default(auto()) @map("_id")
+  reporter     User                 @relation("ReporterUser", fields: [reporterId], references: [id])
+  reported     User                 @relation("ReportedUser", fields: [reportedId], references: [id])
+  reporterId   String
+  reportedId   String
+  reason       String
+  content      String?              // message/photo ID
+  type         ReportType
+  createdAt    DateTime             @default(now())
+  resolved     Boolean              @default(false)
+  resolverId   String?              // Admin ID
+  resolvedAt   DateTime?
+  resolver     Admin?               @relation(fields: [resolverId], references: [id])
+
+  @@index([resolved])
+  @@index([type])
+  @@index([reportedId])
+  @@index([createdAt])
+  @@map("reports")
+}
+
+model Gift {
+  id          String   @id @default(auto()) @map("_id")
+  sender      User     @relation("GiftSender", fields: [senderId], references: [id])
+  receiver    User     @relation("GiftReceiver", fields: [receiverId], references: [id])
+  senderId    String
+  receiverId  String
+  giftType    String   // "rose", "champagne", "diamond"
+  costInETI   Int
+  sentAt      DateTime @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([sentAt])
+  @@map("gifts")
+}
+
+model AIChatSession {
+  id        String   @id @default(auto()) @map("_id")
+  userId    String
+  sessionId String   @unique
+  messages  Json     // [{role: "user", content: "..."}, ...]
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([sessionId])
+  @@map("ai_chat_sessions")
+}
+
+model AdView {
+  id         String   @id @default(auto()) @map("_id")
+  userId     String?
+  adType     AdType
+  shownAt    DateTime @default(now())
+  clicked    Boolean  @default(false)
+  revenue    Float    @default(0.0)
+
+  @@index([userId])
+  @@index([adType])
+  @@index([shownAt])
+  @@map("ad_views")
+}
+
+model Block {
+  id        String   @id @default(auto()) @map("_id")
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
+  blockerId String
+  blockedId String
+  blockedAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+  @@map("blocks")
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id")
+  email     String   @unique
+  name      String
+  role      String   @default("MODERATOR") // "MODERATOR", "ADMIN", "SUPER_ADMIN"
+  password  String
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model AdminActionLog {
+  id          String   @id @default(auto()) @map("_id")
+  adminId     String
+  action      String   // "USER_BAN", "PHOTO_APPROVE", "GIFT_REFUND"
+  targetId    String?  // userId, photoId, etc.
+  targetType  String?  // "User", "Photo", "Transaction"
+  reason      String?
+  createdAt   DateTime @default(now())
+  admin       Admin    @relation(fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("admin_action_logs")
+}
+
+///////////////   //////////////////////     //////////////////////////////////////////////     
+
+
+Generate starter code for remaining backend services (AI engine, notification, media, discovery, analytics, payment, user, blockchain, location).
+Add missing frontend screens/components and backend modules.
+Integrate AI, blockchain, and monetization modules.
+Install required dependencies for each layer.  Generate all  source code database Schemata endpoint. all controller, screens, services, Docerfiles
+Frontend (Mobile App)(PWA/React Native) React Native (later), Expo, React Navigation TypeScript,
+Frontend (Web App-) React.js + TypeScript, Redux, Tailwind CSS, React Router/ react navigation
+frontend Desktop Web / React
+Api Gateway/ Bff  Auth .rate limiting, request Routing API GATEWAY / BFF                      |
+(REST/GraphQL) → Auth, Rate Limiting, Request Routing   
+(Secure HTTPS / WebSockets)
+Backend microservice,Node.js + Express.js / NestJS (modular),
+Profile creation: photos, bio, preferences,Photo upload with facial recognitio
+Google Maps API + Geolocation (HTML5 + React Native) Geocoding, location search
+
+Geo queries Efficient geo-queries (e.g., “users within 10km”)
+Background location updates (mobile) → via React Native Geolocation / Expo Location
+
+
+Database,Mongodb (Prisma ORM) + Redis (caching), search nearby match, user 
+I18n Service,   Language translation API,Node.js + Google Translate API
+Redis (Caching, Session, Real-time)                        |
+Elasticsearch (Search, Discovery), MinIO  loacal server(Photos, Video)
+Realtime Socket.IO for chat & notifications  
+Authentication: Node.js + Passport.js + JWT + OAuth2, biometrics (Face ID, fingerprint) User signup/login (social + email
+Node.js + Passport.js + JWT + OAuth2
+
+End-to-end encryption for messages (optional, Two-factor authentication (2FA)
+Monetization Stripe + subscription plan Webhook
+- Freemium: 100 likes/day free
+- Premium: $9.99/month (Stripe or Apple IAP)
+- Gold: $19.99/month (ad-free + boosts)
+$9.99 Premium Tier✅
+$19.99 Gold Tier
+Geofilters & Boosts Pay to appear in specific locations
+Gifts & Virtual Items Send digital gifts in chat	
+Tipping Send “Sparks” (crypto/fiat) 15% platform cut
+✅ Stripe Checkout
+✅ Webhook Handling (Active/Canceled)
+✅ Freemium Model (100 likes/day free)
+✅ AdMob Banner Ads (non-Gold users)
+✅ Admin Revenue Dashboard
+$ETI Token Economy,  Native utility token used for: <br> • Unlocking “Super Like” <br> • Staking for better visibility <br> • Voting on community moderation <br> • Paying for virtual gifts
+Verified Badges,$2.99 one-time fee for “Trusted Member” badge (shows on profile)
+Sponsored Profiles,"Brands (e.g., dating coaches, luxury travel) pay to promote profiles in niche locations"
+Data Insights (Anonymized),"Sell aggregated trend data to researchers (e.g., “Dating trends in Tokyo 2025”) — opt-in only"
+Facial Recognition Service, "Photo verification, attractiveness score ",Python + OpenCV + FaceNet (self-hosted)
+AI Matching Service: Python (FastAPI) + Redis (real-time queue) + Scikit-learn/TensorFlow Lite (AI matching)
+Realtime chat with Socket.IO,Real-Time Chat & Notifications Match WebSocket (Socket.IO )
+Analytics Service,   "User behavior, retention",Python + BigQuery / Snowflake
+AI Compatibility Engine
+Video Calling (WebRTC)
+OpenAPI (Swagger) 
+fully  Admin Dashboard Built with React + Tailwind + Retool ( user , report, moderation,Monetization tracking 
+subscriptions, ad revenue (Stripe webhooks) all source code boilerplate)
+Report moderation (photos, messages) Analytics: DAU, MAU, match rate, churn Revenue dashboard (LTV, ARPU, conversion) AI model performance
+
+
+//////////////////////////  Stipe controller Web hook, Eti Polygon Block chaim///
+
+This is a large, multi-layered request. 
+
+I will proceed step-by-step, generating starter code, endpoints, controllers, screens, services, Dockerfiles, and installing dependencies for all backend microservices and frontend apps. I will use TypeScript, React, NestJS, Express, Prisma, MongoDB, Redis, Elasticsearch, MinIO, Stripe, Socket.IO, Passport.js, JWT, OAuth2, and more as specified.
+
+Step 1: Backend Microservices Starter Code
+
+AI Engine (Python FastAPI, Node.js for queue)
+Notification (Node.js + Socket.IO)
+Media (Node.js + MinIO)
+Discovery (Node.js + Elasticsearch/Redis)
+Analytics (Python + BigQuery/Snowflake)
+Payment (Node.js + Stripe)
+User (Node.js + Prisma)
+Blockchain (Node.js + Web3.js/Solidity)
+Location (Go + Redis Geo)
+I18n (Node.js + Google Translate API)
+Step 2: Frontend Starter Code
+
+Mobile App (React Native/Expo, TypeScript, React Navigation)
+Web App (React.js, TypeScript, Redux, Tailwind CSS, React Router)
+Desktop Web (React.js, TypeScript)
+Admin Dashboard (React.js, Tailwind, Retool)
+Step 3: API Gateway/BFF
+
+Node.js + Express/NestJS, Kong config, GraphQL/REST endpoints, rate limiting, routing
+Step 4: Database & ORM
+
+MongoDB (Prisma schema )
+Redis (setup for caching, session, real-time)
+Elasticsearch (search/discovery)
+MinIO (local server for media)
+Stripe (payment integration)
+Web3.js/Solidity (blockchain)
+Google Maps API (location/geocoding)
+Step 5: Dockerfiles for all services
+
+Step 6: Dependency Installation
+
+Step 7: Documentation (Swagger/OpenAPI)
+/
+
+
+//////////////////////////////////////
+ Anothe day work this is generaete  As well,../////////////////////
+
+///
+//////////////    Mardis pares le reaps J erevein pour Finir tous ce Bordel///////
+//full-stack dating Mobile App that works seamlessly across mobile web, native apps, and desktop ,similar to Tinder.
+Monetization profitable ,location based GPS, facial recognition, AI Driving, I18n ,Admin page, modular and scalable microservice MVP
+AI-powered, blockchain-verified dating call it Etincel
+
+///////////////////////////
+
+generate all this ..
+
+     CLIENT LAYERS                         |
++-------------------------------------------------------------+
+|  Mobile App (iOS/Android)   |  Mobile Web   |  Desktop Web  |
+|  (React Native )   | (React/PWA)   | (React)   |
++-----------------------------+---------------+---------------+
+               |                     |                |
+               v                     v                v
++-------------------------------------------------------------+
+|                      API GATEWAY / Kong, BFF + GraphQL                     |
+|  (REST/GraphQL) + Kong → Auth, Rate Limiting, Request Routing      |
++-------------------------------------------------------------+
+               | (Secure HTTPS / WebSockets)
+               v
++-------------------------------------------------------------+
+|                      MICROSERVICES BACKEND                  |
+|-------------------------------------------------------------|
+|  • Auth Service     • Match Service     • Chat Service Node.js + Socket.IO / WebRTC (Real-time messaging)    |
+|  • Profile Service  • AI Engine         • Notification      |
+|  • Media Service    • Discovery Service • Analytics Service 
+   • payment service| •User Service,"Node.js + Express / NestJS (Auth, Profiles, Preferences)"
+    blockchain-service  Node.js + Web3.js
+    location-service  Go + Redis Geo  Nearby users, geofencing
++-------------------------------------------------------------+
+               |
+ Auth Service,   Keycloak + JWT + OAuth2,
+ Message Broker: RabbitMQ or Kafka (for async tasks like AI processing)
+   
+ Blockchain-based identity verification
+ Blockchain Service, Solidity + Web3.py + Polygon SDK, "Minting ID NFTs, verifying claims"
+ Tipping Send “Sparks” (crypto/fiat) 15% platform cut
+
+               
++-------------------------------------------------------------+
+|                       DATA LAYER                            |
+|-------------------------------------------------------------|
+|  MongoDB (User, Match, Chat)                             |
+|  MongoDB (Profiles, Preferences)                            |
+|  Redis (Caching, Session, Real-time)                        |
+|  Elasticsearch (Search, Discovery)                          |
+|  MinIO / AWS S3 (Photos, Video)                             |
++-------------------------------------------------------------+
+               |
+               v
++-------------------------------------------------------------+
+|                     AI/ML ENGINE SERVICES                   |
+|-------------------------------------------------------------|
+|  • Recommendation Engine (Collaborative + Content-Based)   |
+|  • NLP Chat Analyzer (Icebreakers, Safety, Tone Detection) |
+|  • Image Moderation (NSFW, Profile Quality)                |
+|  • Behavioral Prediction (Swipe Likelihood, Churn Risk)    |
+|  • Smart Matching (AI-driven compatibility scoring)        |
++-------------------------------------------------------------+
+               |
+               v
++-------------------------------------------------------------+
+|                   CLOUD INFRASTRUCTURE (AWS/GCP)            |
+|  • Kubernetes (Orchestration)                               |
+|  • Docker (Containerization)                                |
+|  • Cloud Functions (Serverless for AI tasks)                |
+|  • CDN (Image/video delivery)                               |
+|  • Firebase / FCM (Push Notifications)                      |
++-------------------------------------------------------------+
+               |
+               v
++-------------------------------------------------------------+
+|                  MONITORING & ANALYTICS                     |
+|  • Prometheus + Grafana (Monitoring)                        |
+|  • ELK Stack (Logging)                                      |
+|  • Mixpanel / Amplitude (User Behavior)                     |
+|  • tests cypress e2e  unit test
+    .A/B Testing Platform   
+
+
+use and Adopte this Prisma MOngodb schema for Entire project 
+
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// =======================
+// ENUMS
+// =======================
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+  OTHER
+}
+
+enum PlanType {
+  FREE
+  PREMIUM
+  GOLD
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  UNPAID
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  GIF
+  VOICE
+  VIDEO_CALL
+  VIDEO_MESSAGE
+}
+
+enum TransactionType {
+  SUBSCRIPTION
+  UNDO_SWIPE
+  INCOGNITO_MODE
+  VERIFIED_BADGE
+  TIP
+  GIFT
+  SPONSORED_PROFILE
+  AI_CHAT_ASSISTANT
+}
+
+enum TransactionStatus {
+  SUCCESS
+  FAILED
+  PENDING
+  REFUNDED
+}
+
+enum ReportType {
+  SPAM
+  INAPPROPRIATE_PHOTO
+  HARASSMENT
+  FAKE_PROFILE
+  OTHER
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BadgeType {
+  VERIFIED
+  SPONSORED
+  TOP_PICK
+}
+
+enum AdType {
+  BANNER
+  INTERSTITIAL
+  REWARDED
+}
+
+enum VideoProfileVisibility {
+  PUBLIC
+  FOLLOWERS_ONLY
+  PRIVATE
+}
+
+// =======================
+// MODELS — UPDATED & FINAL
+// =======================
+
+model User {
+  id                 String       @id @default(auto()) @map("_id")
+  email              String       @unique
+  phone              String?      @unique
+  password           String?      // null for OAuth
+  name               String
+  bio                String?
+  birthDate          DateTime
+  gender             Gender
+  preferredGender    Gender?
+  photos             Photo[]
+  videoProfile       VideoProfile?
+  location           Json?        // GeoJSON { type: "Point", coordinates: [lon, lat] }
+  preferences        Preference?
+  isVerified         Boolean      @default(false)
+  isPremium          Boolean      @default(false)
+  planType           PlanType     @default(FREE)
+  hasBadge           Boolean      @default(false)
+  badgeType          BadgeType?
+  badgePurchasedAt   DateTime?
+  hasIncognito       Boolean      @default(false)
+  incognitoExpiry    DateTime?
+  dailySwipes        Int          @default(0)
+  lastSwipeReset     DateTime     @default(now())
+  undoCredits        Int          @default(0)
+  walletAddress      String?      // For $ETI token
+  tokenId            Int?         // NFT ID
+  nftTxHash          String?      // Blockchain TX for verification audit
+  fcmToken           String?      // Firebase Cloud Messaging token
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  // Relations
+  chats              ChatUser[]   @relation("ChatUserToUser")
+  matches            Match[]      @relation("MatchUsers")
+  sentLikes          Like[]       @relation("LikeSender")
+  receivedLikes      Like[]       @relation("LikeReceiver")
+  subscriptions      Subscription[]
+  transactions       Transaction[]
+  reports            Report[]     @relation("ReportedUser")
+  reportedBy         Report[]     @relation("ReporterUser")
+  giftsSent          Gift[]       @relation("GiftSender")
+  giftsReceived      Gift[]       @relation("GiftReceiver")
+  aiChatSessions     AIChatSession[]
+  blockedUsers       Block[]      @relation("Blocker")
+  blockedBy          Block[]      @relation("Blocked")
+  videoProfiles      VideoProfile[]
+
+  @@index([location], type: Geo) // MongoDB 2dsphere for location queries
+  @@index([email])
+  @@index([phone])
+  @@index([isPremium])
+  @@index([planType])
+  @@index([createdAt])
+  @@index([lastSwipeReset])      // For daily reset cron
+  @@index([incognitoExpiry])     // TTL index for auto-expiry
+  @@map("users")
+}
+
+model Photo {
+  id               String   @id @default(auto()) @map("_id")
+  userId           String
+  url              String
+  isMain           Boolean  @default(false)
+  facialAnalysis   Json?    // { attractiveness: 0.92, symmetry: 0.88, age: 28, hash: "a1b2c3...", verified: true }
+  moderationStatus ModerationStatus @default(PENDING)
+  uploadedAt       DateTime @default(now())
+  moderatedBy      String?  // Admin ID who approved/rejected
+  moderatedAt      DateTime?
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([moderationStatus])
+  @@index([uploadedAt])
+  @@map("photos")
+}
+
+model VideoProfile {
+  id          String              @id @default(auto()) @map("_id")
+  userId      String              @unique
+  videoUrl    String
+  thumbnail   String?
+  caption     String?
+  duration    Int                 // seconds
+  views       Int                 @default(0)
+  likes       Int                 @default(0)
+  visibility  VideoProfileVisibility @default(PUBLIC)
+  uploadedAt  DateTime            @default(now())
+  user        User                @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([uploadedAt])
+  @@index([views])
+  @@map("video_profiles")
+}
+
+model Preference {
+  id             String   @id @default(auto()) @map("_id")
+  userId         String   @unique
+  maxDistance    Int      @default(50) // km
+  minAge         Int      @default(18)
+  maxAge         Int      @default(99)
+  showMe         Gender?
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("preferences")
+}
+
+model Match {
+  id         String     @id @default(auto()) @map("_id")
+  users      User[]     @relation("MatchUsers", references: [id])
+  matchedAt  DateTime   @default(now())
+  chat       Chat?      @relation(fields: [chatId], references: [id])
+  chatId     String?    // Direct link to chat for faster lookup
+
+  @@index([matchedAt])
+  @@index([chatId])      // Critical for chat ↔ match joins
+  @@map("matches")
+}
+
+model Like {
+  id        String   @id @default(auto()) @map("_id")
+  sender    User     @relation("LikeSender", fields: [senderId], references: [id])
+  receiver  User     @relation("LikeReceiver", fields: [receiverId], references: [id])
+  likedAt   DateTime @default(now())
+  senderId  String
+  receiverId String
+
+  @@unique([senderId, receiverId], name: "unique_like")
+  @@index([senderId, receiverId])
+  @@index([likedAt])
+  @@map("likes")
+}
+
+model Chat {
+  id            String       @id @default(auto()) @map("_id")
+  messages      Message[]
+  users         ChatUser[]
+  match         Match?       @relation(fields: [matchId], references: [id]) // Backlink to Match
+  matchId       String?
+  createdAt     DateTime     @default(now())
+  lastActivity  DateTime?    @default(now())
+
+  @@index([createdAt])
+  @@index([lastActivity])
+  @@index([matchId])         // Critical for match → chat
+  @@map("chats")
+}
+
+model ChatUser {
+  id       String  @id @default(auto()) @map("_id")
+  chat     Chat    @relation("ChatUserToChat", fields: [chatId], references: [id])
+  user     User    @relation("ChatUserToUser", fields: [userId], references: [id])
+  chatId   String
+  userId   String
+  lastRead DateTime?
+
+  @@unique([chatId, userId])
+  @@index([userId])
+  @@index([chatId])
+  @@map("chat_users")
+}
+
+model Message {
+  id        String       @id @default(auto()) @map("_id")
+  chatId    String
+  senderId  String
+  content   String
+  type      MessageType  @default(TEXT)
+  encrypted Boolean      @default(false)
+  encryptionKey String?  // For E2E encrypted messages
+  mediaUrl  String?
+  sentAt    DateTime     @default(now())
+  readAt    DateTime?
+  chat      Chat         @relation(fields: [chatId], references: [id])
+  sender    User         @relation(fields: [senderId], references: [id])
+
+  @@index([chatId])
+  @@index([senderId])
+  @@index([sentAt])
+  @@index([type])
+  @@map("messages")
+}
+
+model Subscription {
+  id                  String               @id @default(auto()) @map("_id")
+  userId              String
+  stripeSubscriptionId String?
+  appleTransactionId  String?
+  plan                PlanType
+  status              SubscriptionStatus
+  currentPeriodEnd    DateTime
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  user                User                 @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([plan])
+  @@index([currentPeriodEnd])
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model Transaction {
+  id          String           @id @default(auto()) @map("_id")
+  userId      String
+  type        TransactionType
+  amount      Float
+  currency    String           // "USD", "ETI"
+  status      TransactionStatus @default(PENDING)
+  stripeSessionId String?
+  appleReceipt String?
+  description String?
+  createdAt   DateTime         @default(now())
+  user        User             @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model Report {
+  id           String               @id @default(auto()) @map("_id")
+  reporter     User                 @relation("ReporterUser", fields: [reporterId], references: [id])
+  reported     User                 @relation("ReportedUser", fields: [reportedId], references: [id])
+  reporterId   String
+  reportedId   String
+  reason       String
+  content      String?              // message/photo ID
+  type         ReportType
+  createdAt    DateTime             @default(now())
+  resolved     Boolean              @default(false)
+  resolverId   String?              // Admin ID
+  resolvedAt   DateTime?
+  resolver     Admin?               @relation(fields: [resolverId], references: [id])
+
+  @@index([resolved])
+  @@index([type])
+  @@index([reportedId])
+  @@index([createdAt])
+  @@map("reports")
+}
+
+model Gift {
+  id          String   @id @default(auto()) @map("_id")
+  sender      User     @relation("GiftSender", fields: [senderId], references: [id])
+  receiver    User     @relation("GiftReceiver", fields: [receiverId], references: [id])
+  senderId    String
+  receiverId  String
+  giftType    String   // "rose", "champagne", "diamond"
+  costInETI   Int
+  sentAt      DateTime @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([sentAt])
+  @@map("gifts")
+}
+
+model AIChatSession {
+  id        String   @id @default(auto()) @map("_id")
+  userId    String
+  sessionId String   @unique
+  messages  Json     // [{role: "user", content: "..."}, ...]
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([sessionId])
+  @@map("ai_chat_sessions")
+}
+
+model AdView {
+  id         String   @id @default(auto()) @map("_id")
+  userId     String?
+  adType     AdType
+  shownAt    DateTime @default(now())
+  clicked    Boolean  @default(false)
+  revenue    Float    @default(0.0)
+
+  @@index([userId])
+  @@index([adType])
+  @@index([shownAt])
+  @@map("ad_views")
+}
+
+model Block {
+  id        String   @id @default(auto()) @map("_id")
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
+  blockerId String
+  blockedId String
+  blockedAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+  @@map("blocks")
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id")
+  email     String   @unique
+  name      String
+  role      String   @default("MODERATOR") // "MODERATOR", "ADMIN", "SUPER_ADMIN"
+  password  String
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model AdminActionLog {
+  id          String   @id @default(auto()) @map("_id")
+  adminId     String
+  action      String   // "USER_BAN", "PHOTO_APPROVE", "GIFT_REFUND"
+  targetId    String?  // userId, photoId, etc.
+  targetType  String?  // "User", "Photo", "Transaction"
+  reason      String?
+  createdAt   DateTime @default(now())
+  admin       Admin    @relation(fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("admin_action_logs")
+}
+//////////////////////////////////////////////////////////  this new files  tell him to gnenrate ////
+
+
+Generate all  source code database Schemata endpoint. all controller, screens, services, Docerfiles
+Frontend (Mobile App)(PWA/React Native) React Native (later), Expo, React Navigation TypeScript,
+Frontend (Web App-) React.js + TypeScript, Redux, Tailwind CSS, React Router/ react navigation
+frontend Desktop Web / React
+Api Gateway/ Bff  Auth .rate limiting, request Routing API GATEWAY / BFF                      |
+(REST/GraphQL) → Auth, Rate Limiting, Request Routing   
+(Secure HTTPS / WebSockets)
+Backend microservice,Node.js + Express.js / NestJS (modular),
+Profile creation: photos, bio, preferences,Photo upload with facial recognitio
+Google Maps API + Geolocation (HTML5 + React Native) Geocoding, location search
+
+Geo queries Efficient geo-queries (e.g., “users within 10km”)
+Background location updates (mobile) → via React Native Geolocation / Expo Location
+
+
+Database,Mongodb (Prisma ORM) + Redis (caching), search nearby match, user 
+I18n Service,   Language translation API,Node.js + Google Translate API
+Redis (Caching, Session, Real-time)                        |
+Elasticsearch (Search, Discovery), MinIO  loacal server(Photos, Video)
+Realtime Socket.IO for chat & notifications  
+Authentication: Node.js + Passport.js + JWT + OAuth2, biometrics (Face ID, fingerprint) User signup/login (social + email
+Node.js + Passport.js + JWT + OAuth2
+
+End-to-end encryption for messages (optional, Two-factor authentication (2FA)
+Monetization Stripe + subscription plan Webhook
+- Freemium: 100 likes/day free
+- Premium: $9.99/month (Stripe or Apple IAP)
+- Gold: $19.99/month (ad-free + boosts)
+$9.99 Premium Tier✅
+$19.99 Gold Tier
+Geofilters & Boosts Pay to appear in specific locations
+Gifts & Virtual Items Send digital gifts in chat	
+Tipping Send “Sparks” (crypto/fiat) 15% platform cut
+✅ Stripe Checkout
+✅ Webhook Handling (Active/Canceled)
+✅ Freemium Model (100 likes/day free)
+✅ AdMob Banner Ads (non-Gold users)
+✅ Admin Revenue Dashboard
+$ETI Token Economy,  Native utility token used for: <br> • Unlocking “Super Like” <br> • Staking for better visibility <br> • Voting on community moderation <br> • Paying for virtual gifts
+Verified Badges,$2.99 one-time fee for “Trusted Member” badge (shows on profile)
+Sponsored Profiles,"Brands (e.g., dating coaches, luxury travel) pay to promote profiles in niche locations"
+Data Insights (Anonymized),"Sell aggregated trend data to researchers (e.g., “Dating trends in Tokyo 2025”) — opt-in only"
+Facial Recognition Service, "Photo verification, attractiveness score ",Python + OpenCV + FaceNet (self-hosted)
+AI Matching Service: Python (FastAPI) + Redis (real-time queue) + Scikit-learn/TensorFlow Lite (AI matching)
+Realtime chat with Socket.IO,Real-Time Chat & Notifications Match WebSocket (Socket.IO )
+Analytics Service,   "User behavior, retention",Python + BigQuery / Snowflake
+AI Compatibility Engine
+Video Calling (WebRTC)
+OpenAPI (Swagger) 
+fully  Admin Dashboard Built with React + Tailwind + Retool ( user , report, moderation,Monetization tracking 
+subscriptions, ad revenue (Stripe webhooks) all source code boilerplate)
+Report moderation (photos, messages) Analytics: DAU, MAU, match rate, churn Revenue dashboard (LTV, ARPU, conversion) AI model performance
+
+MONITORING & ANALYTICS                     
+  Prometheus + Grafana (Monitoring)                        
+  ELK Stack (Logging)                                     
+  Mixpanel / Amplitude (User Behavior)                    
+ A/B Testing Platform          
+   
+/////////////////////////////////////////////////////////   /////////////////////////
+
+generate all files Source code of the Application for Development and production 
+create Stripe id key for each item.Monetization Stripe + subscription plan Webhook +$ETI Token Economy
+- Freemium: 100 likes/day free
+- Premium: $9.99/month (Stripe or Apple IAP)
+- Gold: $19.99/month (ad-free + boosts)
+$9.99 Premium Tier✅
+$19.99 Gold TierGeofilters & Boosts Pay to appear in specific locations
+Gifts & Virtual Items Send digital gifts in chat
+Undo Last Swipe,       One-time,                  $0.99
+Incognito Mode,            Hide from non-matches,           $2.99/month
+AI Chat Assistant, 
+Polygon-based "Sparks" tipping (15% platform fee).
+$ETI Token Economy,  Native utility token used for: <br> • Unlocking “Super Like” <br> • Staking for better visibility <br> • Voting on community moderation <br> • Paying for virtual gifts
+Verified Badges,$2.99 one-time fee for “Trusted Member” badge (shows on profile)
+Sponsored Profiles,"Brands (e.g., dating coaches, luxury travel) pay to promote profiles in niche locations"
+Data Insights (Anonymized),"Sell aggregated trend data to researchers (e.g., “Dating trends in Tokyo 2025”) — opt-in only"
+Tipping Send “Sparks” (crypto/fiat) 15% platform cut
+
+✅ Stripe Checkout
+✅ Webhook Handling (Active/Canceled)
+✅ Freemium Model (100 likes/day free)
+✅ AdMob Banner Ads (non-Gold users)
+✅ Environment variables, webhook handlers, frontend buttons, and admin tracking   STRIPE_SECRET_KEY=s
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PREMIUM_PRICE_ID=
+STRIPE_GOLD_PRICE_ID=
+STRIPE_WEBHOOK_URL
+
+
+Revenue Streams:
+Subscriptions: Stripe/Apple IAP → update Subscription + User.planType.
+Tipping ("Sparks"):
+Send $ETI tokens → create Transaction(type: TIP).
+Platform takes 15% → log in Transaction.
+Gifts: Deduct costInETI from sender’s wallet.
+Free Tier Limits:
+dailySwipes reset via cron job (check lastSwipeReset).
+
+
+
+generate and Follow this Env pattern files.
+
+DATABASE_URL=mongodb://mongodb:27017/etincel
+
+# JWT
+JWT_SECRET=your-super-secret-jwt-key-here-never-commit-this
+
+# STRIPE
+STRIPE_SECRET_KEY=sk_test_51Pn5Xh2eZvKYlo2C...
+STRIPE_WEBHOOK_SECRET=whsec_abc123def456ghi789...
+STRIPE_PREMIUM_PRICE_ID=price_1Pn5Xh2eZvKYlo2CJqY6x4Rl
+STRIPE_GOLD_PRICE_ID=price_1Pn5Y52eZvKYlo2CR7oKd8kT
+STRIPE_TRUSTED_BADGE_PRICE_ID=price_1Pn5Zg2eZvKYlo2CmzFjG3Qy
+STRIPE_UNDO_SWIPE_PRICE_ID=price_1Pn5aD2eZvKYlo2CUbA7tLcB
+STRIPE_INCOGNITO_PRICE_ID=price_1Pn5bE2eZvKYlo2CwHf8O7iV
+STRIPE_SUPER_LIKE_PRICE_ID=price_1Pn5cF2eZvKYlo2CKpJ7dUWJ
+STRIPE_ROSE_GIFT_PRICE_ID=price_1Pn5dG2eZvKYlo2CxuY9pZ7s
+STRIPE_DIAMOND_GIFT_PRICE_ID=price_1Pn5eH2eZvKYlo2Cy5r2M8jF
+STRIPE_WEBHOOK_URL=https://api.etincel.app/payment/webhook  
+
+# ETI TOKEN ECONOMY
+ETI_CONTRACT_ADDRESS=0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+ETI_RPC_URL=https://polygon-rpc.com  
+ETI_PRIVATE_KEY=your-wallet-private-key-here
+ETI_DECIMALS=18
+ETI_SYMBOL=ETI
+
+ETI_RPC_URL=https://polygon-rpc.com  
+
+
+# FRONTEND URLs
+FRONTEND_URL=https://etincel.app  
+ADMIN_PANEL_URL=https://admin.etincel.app  
+
+# AD MOB
+ADMOB_BANNER_ID=ca-app-pub-3940256099942544/6300978111
+ADMOB_INTERSTITIAL_ID=ca-app-pub-3940256099942544/1033173712
+
+
+//// ////// root .env>exemple//////     
+# DATABASE
+DATABASE_URL=mongodb://mongodb:27017/etincel
+
+# JWT
+JWT_SECRET=supersecret32charkeyforjwt123456
+
+# STRIPE
+STRIPE_SECRET_KEY=sk_test_51Pn5Xh2eZvKYlo2C...
+STRIPE_WEBHOOK_SECRET=whsec_abc123def456ghi789...
+STRIPE_PREMIUM_PRICE_ID=price_1Pn5Xh2eZvKYlo2CJqY6x4Rl
+STRIPE_GOLD_PRICE_ID=price_1Pn5Y52eZvKYlo2CR7oKd8kT
+STRIPE_TRUSTED_BADGE_PRICE_ID=price_1Pn5Zg2eZvKYlo2CmzFjG3Qy
+STRIPE_UNDO_SWIPE_PRICE_ID=price_1Pn5aD2eZvKYlo2CUbA7tLcB
+STRIPE_INCOGNITO_PRICE_ID=price_1Pn5bE2eZvKYlo2CwHf8O7iV
+STRIPE_SUPER_LIKE_PRICE_ID=price_1Pn5cF2eZvKYlo2CKpJ7dUWJ
+STRIPE_ROSE_GIFT_PRICE_ID=price_1Pn5dG2eZvKYlo2CxuY9pZ7s
+STRIPE_DIAMOND_GIFT_PRICE_ID=price_1Pn5eH2eZvKYlo2Cy5r2M8jF
+STRIPE_WEBHOOK_URL=https://api.etincel.app/payment/webhook
+
+# ETI TOKEN (Polygon)
+ETI_RPC_URL=https://polygon-rpc.com
+ETI_CONTRACT_ADDRESS=0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+ETI_PRIVATE_KEY=your_polygon_wallet_private_key_here
+ETI_DECIMALS=18
+
+# SERVICES
+AI_SERVICE_URL=http://ai-service:8000
+REDIS_URL=redis://redis:6379
+ELASTICSEARCH_URL=http://elasticsearch:9200
+MINIO_ENDPOINT=http://minio:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET=etincel-media
+SOCKET_IO_CORS_ORIGIN=https://etincel.app,http://localhost:5173
+
+# EMAIL
+SENDGRID_API_KEY=SG.xxxx
+EMAIL_FROM=no-reply@etincel.app
+
+# FRONTEND
+FRONTEND_URL=https://etincel.app
+ADMIN_PANEL_URL=https://admin.etincel.app
+
+
+
+
+//////////////////////////////////////////   ///////////////
+
+Generate all  source code of Entire project. all controller, screens, services, Docerfiles Json, packagejson 
+Frontend (Mobile App)(PWA/React Native) React Native (later), Expo, React Navigation TypeScript,
+Frontend (Web App-) React.js + TypeScript, Redux, Tailwind CSS, React Router/ react navigation
+frontend Desktop Web / React/vue all backend   for Develooment and production in Ubuntu server local Nginx 
+
+
+etincel/
+├── 📁 blockchain/
+│   ├── 📁 contracts/
+│   │   ├── EtiToken.sol
+│   │   └── ProfileBadgeNFT.sol
+│   ├── 📁 scripts/
+│   │   └── deploy.ts
+│   ├── 📁 test/
+│   │   └── EtiToken.test.ts
+│   ├── 📄 hardhat.config.ts
+│   └── 📄 package.json
+|
+|
+├── 📁 client/
+│   ├── 📁 mobile-native/               # React Native (Expo + TypeScript)
+│   │   ├── 📄 App.tsx
+│   │   ├── 📁 assets/
+│   │   │   ├── 📁 images/
+│   │   │   │   └── logo.png
+│   │   │   └── 📁 fonts/
+│   │   │       └── Inter-Regular.ttf
+│   │   ├── 📁 components/
+│   │   │   ├── 📁 UI/
+│   │   │   │   ├── 📄 Button.tsx
+│   │   │   │   ├── 📄 Card.tsx
+│   │   │   │   └── 📄 Avatar.tsx
+│   │   │   └── 📁 Business/
+│   │   │       ├── 📄 SwipeCard.tsx
+│   │   │       ├── 📄 ChatBubble.tsx
+│   │   │       └── 📄 MatchIndicator.tsx
+│   │   ├── 📁 screens/
+│   │   │   ├── 📄 OnboardingScreen.tsx
+│   │   │   ├── 📄 LoginScreen.tsx
+│   │   │   ├── 📄 MatchScreen.tsx
+│   │   │   ├── 📄 SwipeScreen.tsx
+│   │   │   ├── 📄 ChatScreen.tsx
+│   │   │   └── 📄 ProfileScreen.tsx
+│   │   ├── 📁 navigation/
+│   │   │   └── 📄 RootNavigator.tsx
+│   │   ├── 📁 hooks/
+│   │   │   ├── 📄 useAuth.ts
+│   │   │   └── 📄 useLocation.ts
+│   │   ├── 📁 services/
+│   │   │   ├── 📄 apiClient.ts
+│   │   │   └── 📄 authService.ts
+│   │   ├── 📁 i18n/
+│   │   │   ├── 📄 en.json
+│   │   │   ├── 📄 es.json
+│   │   │   └── 📄 i18n.ts
+│   │   └── 📄 app.config.ts
+│   │
+│   ├── 📁 mobile-web/                   # React + Vite (PWA)
+│   │   ├── 📁 public/
+│   │   │   ├── 📄 manifest.json
+│   │   │   └── 📁 icons/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 pages/
+│   │   │   │   ├── 📄 LoginPage.tsx
+│   │   │   │   ├── 📄 DiscoverPage.tsx
+│   │   │   │   └── 📄 ChatPage.tsx
+│   │   │   ├── 📁 components/
+│   │   │   ├── 📁 services/
+│   │   │   │   └── 📄 api.ts
+│   │   │   ├── 📁 i18n/
+│   │   │   │   └── 📄 index.ts
+│   │   │   └── 📄 App.tsx
+│   │   ├── 📄 vite.config.ts
+│   │   └── 📄 index.html
+│   │
+│   └── 📁 desktop-web/                 # Next.js 14 (App Router)
+│       ├── 📁 app/
+│       │   ├── 📄 layout.tsx
+│       │   ├── 📄 page.tsx
+│       │   ├── 📄 swipe/page.tsx
+│       │   ├── 📄 chat/page.tsx
+│       │   └── 📁 api/
+│       │       └── 📄 [...proxy]/route.ts
+│       ├── 📁 public/
+│       ├── 📁 styles/
+│       │   └── 📄 globals.css
+│       ├── 📁 lib/
+│       │   ├── 📄 auth.ts
+│       │   └── 📄 i18n.ts
+│       └── 📄 next.config.js
+│
+├── 📁 gateway/
+│   ├── 📁 kong/
+│   │   ├── 📄 kong.yml
+│   │   └── 📁 plugins/
+│   │       ├── 📄 rate-limiting.conf
+│   │       └── 📄 jwt-auth.conf
+│   │
+│   └── 📁 bff-web/                      # NestJS GraphQL BFF
+│       ├── 📁 src/
+│       │   ├── 📁 controllers/
+│       │   │   ├── 📄 UserController.ts
+│       │   │   ├── 📄 MatchController.ts
+│       │   │   ├── 📄 ChatController.ts
+│       │   │   └── 📄 PaymentController.ts
+│       │   ├── 📁 services/
+│       │   │   ├── 📄 UserService.ts
+│       │   │   ├── 📄 MatchService.ts
+│       │   │   ├── 📄 ChatService.ts
+│       │   │   └── 📄 PaymentService.ts
+│       │   ├── 📁 graphql/
+│       │   │   ├── 📄 schema.graphql
+│       │   │   └── 📄 resolvers.ts
+│       │   ├── 📁 dto/
+│       │   │   ├── 📄 CreateUserDto.ts
+│       │   │   └── 📄 SwipeDto.ts
+│       │   ├── 📁 guards/
+│       │   │   └── 📄 AuthGuard.ts
+│       │   ├── 📁 interceptors/
+│       │   │   └── 📄 JwtInterceptor.ts
+│       │   └── 📄 main.ts
+│       ├── 📄 nest-cli.json
+│       ├── 📄 package.json
+│       └── 📄 Dockerfile
+│
+├── 📁 services/
+│   ├── 📁 auth-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 controllers/
+│   │   │   │   └── 📄 AuthController.ts
+│   │   │   ├── 📁 services/
+│   │   │   │   ├── 📄 AuthService.ts
+│   │   │   │   └── 📄 JwtStrategy.ts
+│   │   │   ├── 📁 entities/
+│   │   │   │   └── 📄 User.entity.ts
+│   │   │   ├── 📁 dtos/
+│   │   │   │   └── 📄 LoginDto.ts
+│   │   │   ├── 📁 guards/
+│   │   │   │   └── 📄 LocalAuthGuard.ts
+│   │   │   └── 📄 main.ts
+│   │   ├── 📄 prisma/
+│   │   │   └── 📄 schema.prisma
+│   │   ├── 📄 .env.example
+│   │   ├── 📄 package.json
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 profile-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 controllers/
+│   │   │   │   └── 📄 ProfileController.ts
+│   │   │   ├── 📁 services/
+│   │   │   │   ├── 📄 ProfileService.ts
+│   │   │   │   └── 📄 PhotoService.ts
+│   │   │   ├── 📁 entities/
+│   │   │   │   ├── 📄 Photo.entity.ts
+│   │   │   │   └── 📄 Preference.entity.ts
+│   │   │   ├── 📁 dtos/
+│   │   │   │   └── 📄 UploadPhotoDto.ts
+│   │   │   └── 📄 main.ts
+│   │   ├── 📄 prisma/
+│   │   │   └── 📄 schema.prisma
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 match-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 controllers/
+│   │   │   │   └── 📄 MatchController.ts
+│   │   │   ├── 📁 services/
+│   │   │   │   ├── 📄 MatchService.ts
+│   │   │   │   └── 📄 LikeService.ts
+│   │   │   ├── 📁 entities/
+│   │   │   │   ├── 📄 Match.entity.ts
+│   │   │   │   └── 📄 Like.entity.ts
+│   │   │   └── 📄 main.ts
+│   │   ├── 📄 prisma/
+│   │   │   └── 📄 schema.prisma
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 chat-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 gateways/
+│   │   │   │   └── 📄 ChatGateway.ts    # Socket.IO WebSocket server
+│   │   │   ├── 📁 services/
+│   │   │   │   ├── 📄 ChatService.ts
+│   │   │   │   └── 📄 MessageService.ts
+│   │   │   ├── 📁 entities/
+│   │   │   │   ├── 📄 Chat.entity.ts
+│   │   │   │   ├── 📄 ChatUser.entity.ts
+│   │   │   │   └── 📄 Message.entity.ts
+│   │   │   └── 📄 main.ts
+│   │   ├── 📄 prisma/
+│   │   │   └── 📄 schema.prisma
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 discovery-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 controllers/
+│   │   │   │   └── 📄 DiscoveryController.ts
+│   │   │   ├── 📁 services/
+│   │   │   │   └── 📄 LocationService.ts
+│   │   │   └── 📄 main.ts
+│   │   ├── 📄 prisma/
+│   │   │   └── 📄 schema.prisma
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 media-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 controllers/
+│   │   │   │   └── 📄 MediaController.ts
+│   │   │   ├── 📁 services/
+│   │   │   │   └── 📄 MediaService.ts
+│   │   │   └── 📄 main.ts
+│   │   ├── 📄 prisma/
+│   │   │   └── 📄 schema.prisma
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 notification-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 services/
+│   │   │   │   ├── 📄 FcmService.ts
+│   │   │   │   └── 📄 EmailService.ts
+│   │   │   └── 📄 main.ts
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 payment-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 controllers/
+│   │   │   │   └── 📄 PaymentController.ts
+│   │   │   ├── 📁 services/
+│   │   │   │   ├── 📄 StripeService.ts
+│   │   │   │   └── 📄 SubscriptionService.ts
+│   │   │   ├── 📁 entities/
+│   │   │   │   └── 📄 Subscription.entity.ts
+│   │   │   └── 📄 main.ts
+│   │   ├── 📄 prisma/
+│   │   │   └── 📄 schema.prisma
+│   │   └── 📄 Dockerfile
+│   │
+│   ├── 📁 analytics-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 services/
+│   │   │   │   └── 📄 AnalyticsService.ts
+│   │   │   └── 📄 main.ts
+│   │   └── 📄 Dockerfile
+|   |
+│   ├── 📁 video-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 services/
+│   │   │   │   └── 📄 Service.ts
+│   │   │   └── 📄 main.ts
+│   │   └── 📄 Dockerfile
+|   |
+│   ├── 📁 webrtc-service/
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 services/
+│   │   │   │   └── 📄 Service.ts
+│   │   │   └── 📄 main.ts
+│   │   └── 📄 D
+│   │
+│   └── 📁 ai-service/                  # Python FastAPI
+│       ├── 📁 app/
+│       │   ├── 📄 match_engine.py      # BERT + CLIP similarity
+│       │   ├── 📄 face_verification.py # OpenCV + FaceNet
+│       │   ├── 📄 moderation.py        # NSFW detection
+│       │   ├── 📄 nlp_analyzer.py     # Icebreaker gen + toxicity
+│       │   └── 📄 main.py              # FastAPI entry
+│       ├── 📄 requirements.txt
+│       ├── 📄 Dockerfile
+│       └── 📁 models/
+│           └── 📄 facenet_model.h5
+│
+│   📁├── blockchain-service/           # Web3.js + Polygon SDK
+│   │   ├── contracts/                # Solidity (.sol) — Identity NFT
+│   │   ├── src/
+│   │   │   ├── mintNFT.ts
+│   │   │   ├── verifyIdentity.ts
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   ├── location-service/             # Go + Redis Geo
+│   │   ├── main.go
+│   │   ├── Dockerfile
+│   │   └── go.mod
+├── 📁 prisma/
+│   └── 📄 schema.prisma                 # MASTER SCHEMA (copied to each service)
+│
+├── 📁 data/
+│   ├── 📁 schemas/                      # JSON validation schemas
+│   │   ├── 📄 user.schema.json
+│   │   ├── 📄 photo.schema.json
+│   │   └── 📄 message.schema.json
+│   └── 📁 migrations/
+│       └── 📄 001_init_users.sql
+│
+├── 📁 ai-engine/
+│   ├── 📁 notebooks/
+│   │   └── 📄 matching_model.ipynb
+│   ├── 📁 models/
+│   │   └── 📄 facenet_model.h5
+│   └── 📄 README.md
+
+│   └── 📁 docker/
+│       └── 📄 docker-compose.yml
+│
+├── 📁 monitoring/
+│   ├── 📁 prometheus/
+│   │   └── 📄 prometheus.yml
+│   ├── 📁 grafana/
+│   │   └── 📁 dashboards/
+│   │       └── 📄 etincel-overview.json
+│   └── 📁 elk/
+│       └── 📄 filebeat.yml
+│
+├── 📁 tests/
+│   ├── 📁 unit/
+│   │   └── 📄 auth.service.spec.ts
+│   ├── 📁 integration/
+│   │   └── 📄 match.gateway.spec.ts
+│   └── 📁 e2e/
+│       └── 📁 cypress/
+│           └── 📄 swipe-flow.spec.ts
+│
+├── 📁 admin-dashboard/
+│   ├── 📁 src/
+│   │   ├── 📁 pages/
+│   │   │   ├── 📄 UsersPage.tsx
+│   │   │   ├── 📄 ReportsPage.tsx
+│   │   │   ├── 📄 RevenuePage.tsx
+│   │   │   └── 📄 AnalyticsPage.tsx
+│   │   ├── 📁 components/
+│   │   │   └── 📄 DataTable.tsx
+│   │   └── 📁 services/
+│   │       └── 📄 adminApi.ts
+│   └── 📄 package.json
+│
+├── 📁 scripts/
+│   ├── 📄 seed-db.ts
+│   └── 📄 backup-media.sh
+│
+├── 📁 docs/
+│   ├── 📄 ARCHITECTURE.md
+│   ├── 📄 API_SPECS.yaml
+│   └── 📄 ROADMAP.md
+│
+├── 📁 blockchain/
+│   ├── 📁 contracts/
+│   │   ├── 📄 IdentityVerifier.sol
+│   │   └── 📄 ProfileBadgeNFT.sol
+│   ├── 📁 sdk/
+│   │   └── 📄 web3.ts
+│   └── 📄 README.md
+│
+├── 📄 .gitignore
+├── 📄 docker-compose.yml
+├── 📄 Makefile
+└── 📄 README.md
+
+
+////////////////////
+
+etincel/
+├── 📄 .env.example                     # ← Copy to .env and fill secrets
+├── 📄 .gitignore
+├── 📄 docker-compose.yml
+├── 📄 Makefile
+├── 📄 README.md
+│
+├── 📁 prisma/
+│   └── 📄 schema.prisma               # ← Your exact Prisma schema
+│
+├── 📁 client/
+│   ├── 📁 mobile-native/              # React Native (Expo)
+│   │   ├── 📄 App.tsx
+│   │   ├── 📄 app.config.ts
+│   │   ├── 📁 assets/
+│   │   ├── 📁 components/
+│   │   ├── 📁 hooks/
+│   │   ├── 📁 i18n/
+│   │   ├── 📁 navigation/
+│   │   ├── 📁 screens/
+│   │   └── 📁 services/
+│   │
+│   ├── 📁 mobile-web/                 # React + Vite (PWA)
+│   │   ├── 📄 index.html
+│   │   ├── 📄 vite.config.ts
+│   │   └── 📁 src/
+│   │
+│   └── 📁 desktop-web/                # Next.js 14 (App Router)
+│       ├── 📄 next.config.js
+│       ├── 📄 tailwind.config.ts
+│       └── 📁 app/
+│
+├── 📁 gateway/
+│   ├── 📁 kong/
+│   │   └── 📄 kong.yml                # ← Declarative Kong config
+│   └── 📁 bff-web/                    # NestJS BFF (GraphQL + REST)
+│       ├── 📄 Dockerfile
+│       ├── 📄 package.json
+│       └── 📁 src/
+│
+├── 📁 services/
+│   ├── 📁 auth-service/               # JWT + OAuth2 + 2FA
+│   ├── 📁 user-service/               # Profiles, preferences
+│   ├── 📁 profile-service/            # Photos, bio, facial analysis
+│   ├── 📁 media-service/              # MinIO + moderation
+│   ├── 📁 discovery-service/          # Elasticsearch + Redis Geo
+│   ├── 📁 match-service/              # Likes, matches
+│   ├── 📁 chat-service/               # Socket.IO + WebRTC
+│   ├── 📁 payment-service/            # Stripe + $ETI token
+│   ├── 📁 notification-service/       # FCM + Email
+│   ├── 📁 analytics-service/          # Mixpanel/Amplitude
+│   ├── 📁 blockchain-service/         # Web3.js + Polygon NFTs
+│   ├── 📁 location-service/           # Go + Redis Geo
+│   └── 📁 ai-service/                 # Python FastAPI (AI engine)
+│
+├── 📁 blockchain/
+│   ├── 📁 contracts/
+│   │   ├── 📄 EtiToken.sol
+│   │   └── 📄 ProfileBadgeNFT.sol
+│   ├── 📄 hardhat.config.ts
+│   └── 📄 package.json
+│
+├── 📁 admin-dashboard/                # React + Tremor
+│   ├── 📄 package.json
+│   └── 📁 src/
+│
+├── 📁 infra/
+│   ├── 📁 docker/
+│   │   └── 📄 docker-compose.yml      # ← Main compose file
+│   ├── 📁 nginx/
+│   │   └── 📄 etincel.conf            # ← Nginx config for Ubuntu
+│   └── 📁 k8s/                        # (Optional for prod)
+│
+├── 📁 scripts/
+│   └── 📄 seed-db.ts                  # Prisma seed
+│
+└── 📁 tests/
+    ├── 📁 e2e/
+    ├── 📁 integration/
+    └── 📁 unit/

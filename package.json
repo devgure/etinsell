@@ -1,0 +1,19 @@
+{
+  "name": "etincell-monorepo",
+  "private": true,
+  "workspaces": [
+    "client/*",
+    "services/*",
+    "admin-dashboard"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev:mobile-web": "npm --workspace=client/mobile-web run dev",
+    "dev:desktop-web": "npm --workspace=client/desktop-web run dev",
+    "dev:all": "concurrently \"npm:dev:mobile-web\" \"npm:dev:desktop-web\"",
+    "build:all": "npm --workspaces run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
